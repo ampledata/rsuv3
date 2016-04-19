@@ -29,8 +29,9 @@ class RSUV3(object):
         _logger.addHandler(_console_handler)
         _logger.propagate = False
 
-    def __init__(self, serial_port, baud=None):
+    def __init__(self, serial_port, baud=None, rtscts=None):
         self.baud = baud or rsuv3.constants.SERIAL_BAUD
+        self.rtscts = rtscts or rsuv3.constants.RTSCTS
         self.serial_port = serial_port
         self.interface = None
 
@@ -43,11 +44,12 @@ class RSUV3(object):
             self.interface.close()
 
     def connect(self, timeout=None):
-        self.interface = serial.Serial(self.serial_port, self.baud, rtscts=1)
+        self.interface = serial.Serial(
+            self.serial_port, self.baud, rtscts=self.rtscts)
         self.interface.timeout = timeout or rsuv3.constants.SERIAL_TIMEOUT
 
     def _read_result(self):
-        time.sleep(1)
+        time.sleep(rsuv3.constants.READ_SLEEP)
         read_data = ''
         while 1:
             read_data = ''.join([

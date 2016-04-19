@@ -38,7 +38,7 @@ setuptools.setup(
     author_email='gba@orionlabs.io',
     zip_safe=False,
     packages=['rsuv3'],
-    install_requires=['pyserial'],
+    install_requires=['pyserial == 2.7'],
     license=open('LICENSE').read(),
     package_dir={'rsuv3': 'rsuv3'},
     url='https://github.com/ampledata/rsuv3',

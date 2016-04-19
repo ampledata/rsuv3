@@ -1,0 +1,304 @@
+1. AF–AudioLPFOn/Off
+Command: AF
+Syntax: AFn or AF?
+Description: Turns on (n = 1) or off (n = 0) Audio Lowpass Filter Default State: On
+Notes: 300-2500 Hz - Filter ON; 300-5500 Hz Filter Off Response: AF? Reports current Audio Lowpass Filter state
+
+2. AI–ArduinoInputPinFunction
+Command: AI
+Syntax: AIn or AI?
+Description: Sets Function of the Arduino DIN pin Default State: 0 - OFF Notes:0-OFF,1-SQOPEN,2-PTT
+Response: AI? Reports current Arduino DIN pin function
+
+3. AO–ArduinoOutputPinFunction
+Command: AO
+Syntax: AOn or AO?
+Description: Sets Function of the Arduino DOUT pin Default State: 0 - LOW
+Notes:0-LOW,1-SQOPEN,2-DTMFDETECT,3-TXON,4-CTCSSDET,5-HIGH Response: AO? Reports current Arduino DOUT pin function
+
+4. B1–Arduino/USBSerialPortBaudRate
+Command: B1
+Syntax: B1n or B1?
+Description: Sets serial port 1 baud rate (Arduino/FTDI/internal)
+Default State: 19200
+Notes: 0 - 1200, 1 - 4800, 2 - 9600, 3 - 19200, 4 - 38400, 5 – 57600, requires a power cycle to change Response: B1? Reports current serial port 1 baud rate
+
+5. B2–I/OConnectorSerialPortBaudRate
+Command: B2
+Syntax: B2n or B2?
+Description: Sets serial port 2 baud rate (Arduino/FTDI/internal)
+Default State: 19200
+Notes: 0 - 1200, 1 - 4800, 2 - 9600, 3 - 19200, 4 - 38400, 5 - 57600, requires a power cycle to change
+
+6. BC-SetCWBeaconTimer
+Command: BC
+Syntax: BCnnn or BC?
+Description: Sets the true CW Beacon Timer to nnn sec, setting this command will set the MCW beacon timer (BT) to 0.
+Default State: 0 sec (off)
+Notes: Send true CW Beacon Message after nnn seconds; 60 - 600 seconds, 0 = off. All digits required. Response: BC? Reports true CW Beacon Time
+
+7. BL – Send Control to the Bootloader
+Command: BL
+Syntax: BL
+Description: Sends program control to the bootloader Default State: N/A
+Notes: See Firmware Update section of the manual Response: None
+
+8. BM–SetBeaconMessage
+Command: BM
+Syntax: BM<text> or BM?
+Description: Sets beacon mode CW message to <text>. Both MCW and true CW beacons send the BM message. In true CW the BM message supports sending unmodulated carrier of 1-30 seconds by
+
+inserting a #nn where nn is the length of the desired carrier. The & character causes the entire message to repeat from the beginning. Any characters after the & are sent once. For example BT#05& W6ZZZ<CR> will send two 5-second carriers followed by W6ZZZ. These advances feature are only supported in the true CW beacons, MCW beacons use standard message processing.
+Default State: ‘RS-UV3’
+Notes: <text> will be sent in audio CW every time the beacon timer times out. Response: BM? Reports current beacon message
+
+9. BT–SetMCWBeaconTimer
+Command: BT
+Syntax: BTnnn or BT?
+Description: Sets the modulated FM CW Beacon Timer to nnn sec, setting this command will set the real CW beacon timer (BC) to 0.
+Default State: 0 sec (off)
+Notes: Send MCW Beacon Message after nnn seconds; 60 - 600 seconds, 0 = off. All digits required. Response: BT? Reports MCW Beacon Time
+
+11. CF – Set CW Audio Frequency
+Command: CF
+Syntax: CFnnnn or CF?
+Description: Sets CW audio tone frequency to nnnn Hz Default State: 650 Hz
+Notes: 400 – 1300Hz, all digits required
+Response: CF? Reports current CW audio frequency
+
+12. CL – Set CW Call Sign
+Command: CL
+Syntax: CL<text> or CL?
+Description: Sets call sign to <text>, 15 characters max
+Default State: ‘RS-UV3’
+Notes: The call sign will be sent then the ID timer times out or if an ID command is sent Response: CL? Reports current call sign
+
+14. CS – Set CW Speed
+Command: CS
+Syntax: CSnn or CS?
+Description: Sets CW speed to nn WPM
+Default State: 22 WPM
+Notes: Sets CW ID, Beacon and Text-to-CW speed, both digits required Response: CS? Reports current CW speed
+
+15. CT – Send MCW Text
+Command: CT
+Syntax: CT<text>
+Description: Sends <text> in audio CW
+Default State: N/A
+Notes: Non CW characters generate a space, 28 characters max Response: N/A
+
+16. CW – Send CW Text
+Command: CW
+Syntax: CW<text>
+Description: Sends <text> in true OOK CW
+Default State: N/A
+Notes: Non CW characters generate a space, 28 characters max Response: N/A
+
+17. DD – DTMF Tone Duration
+Command: DD
+Syntax: DDnnnn or DD?
+Description: Sets DTMF tone duration to nnnn milliseconds Default State: 500 ms.
+Notes: Range: 50 – 2000 ms., all digits required
+Response: DD? Reports current DTMF tone duration
+
+18. DP – Pre-emphasis/De-emphasis ON/OFF
+Command: DP
+Syntax: DPn or DP?
+Description: Turns on (n = 1) or off (n = 0) De-emphasis/Pre-emphasis Default State: ON
+Notes:
+Response: DP? Reports current De-emphasis/Pre-emphasis state
+
+19. DR – DTMF Tone Detector ON/OFF
+Command: DR
+Syntax: DRn or DR?
+Description: Turns on (n = 1) or off (n = 0) DTMF Tone Detector Default State: OFF
+Notes: Will send the hex value of the DTMF character via serial port Response: DR? Reports current DTMF detection state
+
+
+21. EX – Set the Function of the E_TX and E_RX Pins
+Command: EX
+Syntax: EXn or EX?
+Description: Sets the function of E_TX and E_RX pins on the DB9 I/O connector Default State: 1 – TTL Serial Port
+Notes: 0 - E_TX radio transmitting, E_RX sq open; 1 - TTL serial port
+Response: EX? Reports current function of the E pins
+
+22. FD1 – Set the RS-UV3 to Factory Default State
+Command: FD1
+Syntax: FD1
+Description: Sets all memory channels and operating parameters to factory default settings Default State: 1 N/A
+Notes: Some settings require a power cycle to change
+Response: N/A
+
+26. GM – Set Microphone Gain
+Command: GM
+Syntax: GMnn or GM?
+Description: Sets Microphone Gain level from 0 - 15 in 2 dB steps Default State: 10
+Notes: all digits required
+Response: Reports the current Microphone gain setting
+
+27. GT – Set CW/DTMF Tone Gain
+Command: GT
+Syntax: GTnn or GT?
+Description: Sets DTMF/CW Tx Gain level from 0 - 15 in 2 dB steps Default State: 8
+Notes: all digits required
+Response: Reports the current DTMF/CW gain setting
+
+28. HP – Turns on/off the audio HP filter
+Command: HP
+Syntax: HPn or HP?
+Description: Turns on (n = 1) or off (n = 0) Audio High-pass Filter Default State: 1
+Notes: Sets the low frequency corner
+Response: Reports the current audio HP filter setting
+
+29. HT – Set the TX Hangtime
+Command: HT
+Syntax: HTnnnn or HT?
+Description: Sets the length of time the TX stays keyed after the PTT signal goes away, useful for repeater applications.
+Default State: 0 msec.
+Notes: all digits required, 0 – 5000 msec.
+Response: Reports the Hang-time
+
+30.ID–SendsCWID
+Command: ID
+Syntax: ID
+Description: Sends the call sign in audio CW, automatically keys the TX if needed Default State: N/A
+Notes: N/A
+Response: N/A
+
+31. IT – Sets CW ID Timer
+Command: IT
+Syntax: ITnnn or IT?
+Description: Sets the CW ID Timer to nnn seconds
+Default State: 0
+Notes: Will send CW ID after the current transmission ends, 0 - 500 sec, 0 = off, all digits required Response: IT? Reports CW ID Time
+
+32. LD – ST LED Function
+Command: LD
+Syntax: LDn or LD?
+Description: Sets the funstion of the ST LED Default State: 2 – Squelch Open Notes:0-off,1-on,2-sqopen,3-BattChgStat Response: LD? Reports the ST LED Function
+
+33. MC – Beacon Memory Channels
+Command: MC
+Syntax: MCn or MC?
+Description: Sets the maximum channel for multichannel beacons
+Default State: 0
+Notes: n = 0 is a single channel beacon. n = 2 - 9 will cause the RS-UV3 to recal a new channel before sending a beacon starting at channel 1 going to channel n and repeating
+Response: MC? Reports the current maximum beacon channel
+
+34. PD – Power Down
+Command: PD
+Syntax: PDn or PD?
+Description: Turns on (n = 1) or off (n = 0) the transceiver chip Default State: 1 - ON
+Notes: Reduces the current by 70mA.
+Response: PD? Reports the current PD state
+35. PW – Set TX Power Level
+Command: PW
+Syntax: PWn or PW?
+Description: Sets TX power to high (n = 1) or low (n = 0) Default State: 1 - High
+Notes: High is 23-24 dBm, low is 9 – 10 dBm
+Response: PW? Reports current power setting
+
+36. RC – Recall Memory Channel
+Command: RC
+Syntax: RCn
+Description: Recalls operating parameters from channel n
+Default State: N/A
+Notes: 1 – 9, Recalls RX/TX frequency, squelch, CTCSS Frequency/mode and TX power Response: N/A
+
+37. RR – Transceiver Chip Register Read (Advanced)
+Command: RR
+Syntax: RRxx
+Description: Reads RDA1846S register xx
+Default State: N/A
+Notes: xx is in Hex, find info about the RDA1846S registers on the Internet. Response: Reports the 16 bit HEX value of register xx
+
+38. RS – Transceiver Chip Register Set (Advanced)
+Command: RS
+Syntax: RSxxyyyy
+Description: Sets RDA1846S register xx to yyyy
+Default State: N/A
+Notes: xx, yyyy in Hex, find info about the RDA1846S registers on the Internet. Response: if successful, reports: OK, otherwise nothing
+
+39. SD – CW/DTMF Side Tone On/Off
+Command: SD
+Syntax: SDn of SD?
+Description: Turns the CW/DTMF side tone (1) On or (0) Off
+Default State: 0
+Notes: Allows the CW and DTMF tones to be heard through the speaker Response: SD? Reports current state of the side tone
+
+40. SN – Read Noise Level of RX Signal
+Command: SN
+Syntax: SN
+Description: Returns receiver noise strength Default State: N/A
+Notes: Lower is a better quality signal Response: SN: xxxx
+
+
+43. SS – Read Signal Level of RX Signal
+Command: SN
+Syntax: SN
+Description: Returns receiver signal strength Default State: N/A
+Notes: In dBm
+Response: SS: xxxx
+
+44. ST – Store Memory Channel
+Command: ST
+Syntax: STn
+Description: Store operating parameters from channel n
+Default State: N/A
+Notes: 1 – 9, Stores RX/TX frequency, squelch, CTCSS Frequency/mode and TX power; ST0 stores the current operating parameters as power-on defaults
+Response: N/A
+
+45. TF – Set CTCSS Tone Frequency
+Command: TF
+Syntax: TFnnnn or TF?
+Description: Sets CTCSS tone frequency to nnnn/100 hz
+Default State: 131.8 Hz
+Notes: all digits are required, example: TF13180 sets tone to 131.8 hz Response: TF? Reports current CTCSS tone frequency
+
+46. TG – Set TX Time Out CW Message
+Command: TG
+Syntax: TG<text> or TG?
+Description: Sets TO message to text 7 char max
+Default State: ‘TO’
+Notes: Message is sent after the TX times out and before the TX unkeys
+Response: TG? Reports current TO messege
+
+47. TM – Set CTCSS Mode
+Command: TM
+Syntax: TMn or TM?
+Description: Sets CTCSS mode to Off (0), TX (1) and RX/TX (2) Default State: 0 - Off
+Notes: N/A
+Response: TM? Reports the current CTCSS Mode
+
+48. TO – Set TX Time Out Timer
+Command: TO
+Syntax: TOnnn or TO?
+Description: Sets the Timeout Time in mec, 0 - 600 seconds, 0 = off. Default State: 0 - Off
+Notes: Max transmit time, after specified time sends TO_msg and unkeys Response: TO? Reports current Timeout Time
+
+49. TP – Read RS-UV3 PCB Temperature
+Command: TP
+Syntax: TP
+Description: Reads the temperature of the RS-UV3 PCB Default State: N/A
+Notes: N/A
+Response: Reports the current PCB temperature in C
+
+50. TX – Turn the Transmitter On/Off
+Command: TX
+Syntax: TXn
+Description: Turns the transmitter on/off
+Default State: 0 - Off
+Notes: n = 0 off (RX); n = 1 - 5 on (TX) with a time-out of n minutes. Overrides the set time-out for the current transmission only. TX0 will end a transmission even if the PTT line is low. If the TX is off, RX is on. Response: none
+
+51. VT – Read RS-UV3 Operating Voltage
+Command: VT
+Syntax: VT
+Description: Reads the operating voltage of the RS-UV3 PCB Default State: N/A
+
+Notes: Reads the 8.5V rail if the unit is on DC power or the battery voltage if running on a battery Response: Reports the current operating voltage
+
+52. VU – Sets the Receiver Audio Volume
+Command: VU
+Syntax: VUnn or VU?
+Description: Sets volume level from 0 - 39 in 1 dB steps Default State: 12
+Notes: All digits required; DTMF decode works best around 15 Response: VU? Reports current volume level

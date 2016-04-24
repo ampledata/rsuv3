@@ -59,7 +59,15 @@ class RSUV3(object):
                 return read_data.replace('\r', '\n').rstrip().lstrip()
 
     def _send_command(self, command):
-        self._logger.debug('Sending command="%s"', command)
+        """
+        Sends the given command to the serial interface, followed by CRLF.
+
+        :param command: Command to send.
+        :type command: str
+        :returns: Serial output result of command.
+        :rtype: str
+        """
+        self._logger.debug('command="%s"', command)
         self.interface.write(command + '\r\n')
         res = self._read_result()
         self._logger.debug('result="%s"', ' '.join(res.split('\n')))
@@ -67,35 +75,42 @@ class RSUV3(object):
 
     def get_firmware(self):
         """
-        25. FW - Report the Current Firmware Version
-        Command: FW
-        Syntax: FW
-        Description: Reports the current firmware version Default State: N/A
-        Notes: N/A
-        Response: Reports the current firmware version
+        Gets the current firmware version.
+
+        :returns: Firmware Version.
+        :rtype: str
         """
         return self._send_command('FW')
 
     def get_channel_parameters(self, channel=0):
         """
-        13. CP - Report Channel Parameters
-        Command: CP
-        Syntax: CPn
+        Gets channel parameters for the given channel (default channel=0).
 
-        Description: Returns all parameter for memory channel n without
-        switching to that channel Notes: TX Fr, RX Fr, Tone Fr, SQ Mode, PWR;
-        Channel 0 is current operating set
+        Returns the channel parameters as a dictionary:
 
-        Response: TX Fr<CR> RX Fr<CR> Tone Fr<CR> SQ Mode<CR> PWR<CR>
+            {
+                'tx_frequency': '12345',
+                'rx_frequency': '12345',
+                'tone_frequency': '1234',
+                'squelch_mode': 'xxx',
+                'power': 'xxx',
+                'channel': 'n'
+            }
+
+        :param channel: Channel number for which to return parameters.
+        :type channel: str
+        :returns: Channel Parameters Dictionary.
+        :rtype: dict
         """
         params = ('tx_frequency', 'rx_frequency', 'tone_frequency',
             'squelch_mode', 'power')
+
         cmd = ''.join(['CP', str(channel)])
         res = self._send_command(cmd)
-        res2 = res.split()
-        res3 = dict(zip(params, res2))
-        res3['channel'] = channel
-        return res3
+
+        channel_params = dict(zip(params, res.split()))
+        channel_params['channel'] = channel
+        return channel_params
 
     def get_channel_squelch_state(self, channel=0):
         """

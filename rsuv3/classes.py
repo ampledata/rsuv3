@@ -62,6 +62,8 @@ class RSUV3(object):
         """
         Sends the given command to the serial interface, followed by CRLF.
 
+        Returns the result of the command.
+
         :param command: Command to send.
         :type command: str
         :returns: Serial output result of command.
@@ -75,12 +77,17 @@ class RSUV3(object):
 
     def get_firmware(self):
         """
-        Gets the current firmware version.
+        Gets & Returns the current firmware version as a dictionary:
 
-        :returns: Firmware Version.
-        :rtype: str
+            {
+                'firmware_version': 'xxx'
+            }
+
+        :returns: Firmware Version as a dictionary.
+        :rtype: dict
         """
-        return self._send_command('FW')
+        res = self._send_command('FW')
+        return {'firmware_version': res}
 
     def get_channel_parameters(self, channel=0):
         """
@@ -114,19 +121,26 @@ class RSUV3(object):
 
     def get_channel_squelch_state(self, channel=0):
         """
-        10. CC - Check Squelch State on a Channel
-        Command: CC
-        Syntax: CCn
+        Gets the Squelch State for the given channel (default channel=0).
 
-        Description: Checks to see if the squelch is open on memory channel n
-        Notes: Takes about 50 mS for carrier squelch and 100 mS for
-        channels with tone squelch, returns to current operating channel when
-        finished.
+        Returns 'Squelch State' as either "open" or "closed" in a dictionary:
 
-        Response: 0 - squelch closed; 1 - squelch open
+            {
+                'squelch_state': 'open',  # or 'closed'
+                'channel': 'n'
+            }
+
+        Notes: Takes about 50 mS for carrier squelch and 100 mS for channels
+        with tone squelch.
+
+        :param channel: Channel number for which to return parameters.
+        :type channel: str
+        :returns: Squelch State as a dictionary.
+        :rtype: dict
         """
         cmd = ''.join(['CP', str(channel)])
         res = self._send_command(cmd)
+        # TODO: Could probably use better string checking here (vs. '0' in x).
         if '0' in res:
             return {'channel': channel, 'squelch_state': 'closed'}
         elif '1' in res:
@@ -158,22 +172,24 @@ class RSUV3(object):
     def set_tx_frequency(self, frequency):
         return self.set_frequency(frequency, 'tx')
 
+    # TODO: Add additional supported params for repeater offsets:
+    #  D - Set RX to nnnnnn kHz and TX to nnnnnn - the repeater offset
+    #  U - Set RX to nnnnnn kHz and TX to nnnnnn + the repeater offset
+    #  Repeater offsets: 2M - 600 kHz; 1.25M - 1600 kHz; 70cm -5000 kHz
     def set_frequency(self, frequency, op_arg='both'):
         """
-        23. F - Set the RS-UV3 Operating Frequency
-        Command: F
-        Syntax: Fz nnnnnn or F?
+        Sets the RS-UV3 to the specified Operating Frequency(ies).
 
-        Description: Sets TX and/or RX frequency (depending on z) to nnnnnn
-        kHz Default State: TX - 146.52 MHz; RX 146.52 MHz
-        Notes: all digits are required,
-        R - Set RX frequency only
-        T - Set TX frequency only
-        S - Set both TX and RX to same frequency, simplex
-        D - Set RX to nnnnnn kHz and TX to nnnnnn - the repeater offset
-        U - Set RX to nnnnnn kHz and TX to nnnnnn + the repeater offset
-        Repeater offsets: 2M - 600 kHz; 1.25M - 1600 kHz; 70cm -5000 kHz
-        Response: F? Reports RX and TX frequencies
+        Frequency is in 6 numerical digit format in kHz with no punctuation,
+        that is: 146.520 MHz is 146520 kHz.
+
+        See fix_frequency() in utils.
+
+        Can set either TX ('tx'), RX ('rx') or Both [simplex] ('both')
+        frequencies (default=both).
+
+        :param frequency: Frequency to set.
+        :param op_arg: TX Frequency, RX Frequency or Both Frequencies.
         """
         if op_arg == 'both':
             cmd = ''.join(['FS', frequency])
@@ -224,13 +240,14 @@ class RSUV3(object):
 
     def get_squelch_level(self):
         """
-        42. SQ - Set the Squelch Level
-        Command: SQ
-        Syntax: SQn or SQ?
-        Description: Sets the level of the RSSI squelch to n
-        Default State: 3
-        Notes: 0 - 9; 0 = always open, 9 = never open
-        Response: SQ? Reports current SQ level
+        Gets & Returns the current RSSI Squelch Level as a dictionary:
+
+            {
+                'squelch_level': n
+            }
+
+        :returns: Squelch Level as a dictionary.
+        :rtype: dcit
         """
         res = self._send_command('SQ?')
         res2 = res.split()
@@ -238,28 +255,24 @@ class RSUV3(object):
 
     def set_squelch_level(self, level):
         """
-        42. SQ - Set the Squelch Level
-        Command: SQ
-        Syntax: SQn or SQ?
-        Description: Sets the level of the RSSI squelch to n
-        Default State: 3
-        Notes: 0 - 9; 0 = always open, 9 = never open
-        Response: SQ? Reports current SQ level
+        Sets the RSSI Squelch Level to specified level.
+
+        Squelch Level range is 0 to 9, with 0 being 'always open' and '9'
+        being 'never open'.
         """
         cmd = ''.join(['SQ', str(level)])
-        res = self._send_command(cmd)
-        return self.get_squelch_level()
+        return self._send_command(cmd)
 
     def send_dtmf(self, dtmf):
         """
-        20. DS - Send a String of DTMF Characters
-        Command: DS
-        Syntax: DS<text>
-        Description: Sends DTMF characters 0,1,2,3,4,5,6,7,8,9,A,B,C,D,* and #
-        Default State: N/A
+        Immediately transmits a string of DTMF Characters.
+
+        DTMF characters are in the set of:
+            [0-9,A-D,*,#]
+
         Notes: Non DTMF characters generate a pause, 28 characters max,
         automatically keys the TX if needed
-        Response: N/A
+
         """
         cmd = ''.join(['DS', dtmf])
         res = self._send_command(cmd)

@@ -96,8 +96,8 @@ class RSUV3(object):
         Returns the channel parameters as a dictionary:
 
             {
-                'tx_frequency': '12345',
-                'rx_frequency': '12345',
+                'tx_frequency': '123450',
+                'rx_frequency': '123450',
                 'tone_frequency': '1234',
                 'squelch_mode': 'xxx',
                 'power': 'xxx',
@@ -109,15 +109,9 @@ class RSUV3(object):
         :returns: Channel Parameters Dictionary.
         :rtype: dict
         """
-        params = ('tx_frequency', 'rx_frequency', 'tone_frequency',
-            'squelch_mode', 'power')
-
         cmd = ''.join(['CP', str(channel)])
         res = self._send_command(cmd)
-
-        channel_params = dict(zip(params, res.split()))
-        channel_params['channel'] = channel
-        return channel_params
+        return rsuv3.util.cp_serializer(res, channel)
 
     def get_channel_squelch_state(self, channel=0):
         """
@@ -250,6 +244,7 @@ class RSUV3(object):
         :rtype: dcit
         """
         res = self._send_command('SQ?')
+        # FIXME: Why did I put a split() call here?
         res2 = res.split()
         return {'squelch_level': res2[1]}
 

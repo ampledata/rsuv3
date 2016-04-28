@@ -4,11 +4,11 @@
 """
 .. moduleauthor:: Jonas Berg <pyhys@users.sourceforge.net>
 
-dummy_serial: A dummy/mock implementation of a serial port for testing purposes.
+dummy_serial: A dummy/mock implementation of a serial port for testing
+purposes.
 """
 
-__author__  = 'Jonas Berg'
-__email__   = 'pyhys@users.sourceforge.net'
+__author__  = 'Jonas Berg <pyhys@users.sourceforge.net>'
 __license__ = 'Apache License, Version 2.0'
 
 
@@ -17,12 +17,13 @@ import sys
 import time
 
 
-# The default timeot value in seconds. Used if not set by the constructor.
+# The default timeout value in seconds. Used if not set by the constructor.
 DEFAULT_TIMEOUT = 2
 
 
 # The default baud rate. Used if not set by the constructor.
 DEFAULT_BAUDRATE = 9600
+
 
 # A dictionary of respones from the dummy serial port.
 #
@@ -82,11 +83,12 @@ class Serial(object):
         self._logger.debug('args=%s', args)
         self._logger.debug('kwargs=%s', kwargs)
 
-        self.ds_responses = kwargs.get('ds_responses', {})
-        self._waiting_data = NO_DATA_PRESENT
         self._isOpen = True
+        self._waiting_data = NO_DATA_PRESENT
+
         self.port = kwargs['port']  # Serial port name.
         self.initial_port_name = self.port  # Initial name given to the serial port
+        self.ds_responses = kwargs.get('ds_responses', {})
         self.timeout = kwargs.get('timeout', DEFAULT_TIMEOUT)
         self.baudrate = kwargs.get('baudrate', DEFAULT_BAUDRATE)
 
@@ -147,11 +149,13 @@ class Serial(object):
         if not self._isOpen:
             raise IOError('Dummy_serial: Trying to write, but the port is not open. Given:' + repr(inputdata))
 
-        # Look up which data that should be waiting for subsequent read commands
-        self._waiting_data = self.ds_responses[inputstring]
+        # Look up which data that should be waiting for subsequent read
+        # commands.
+        self._waiting_data = self.ds_responses.get(inputstring, 'DUMMY_SERIAL')
 
     def read(self, numberOfBytes):
-        """Read from a port on dummy_serial.
+        """
+        Read from a port.
 
         The response is dependent on what was written last to the port on
         dummy_serial, and what is defined in the :data:`RESPONSES` dictionary.

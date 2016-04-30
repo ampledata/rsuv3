@@ -14,5 +14,3 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 import rsuv3  # pylint: disable=W0611
-
-import dummy_serial

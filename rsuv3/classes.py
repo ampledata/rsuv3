@@ -3,11 +3,6 @@
 
 """RS-UV3 Classes."""
 
-__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
-__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
-__license__ = 'Apache License, Version 2.0'
-
-
 import logging
 import logging.handlers
 import time
@@ -16,6 +11,10 @@ import serial
 
 import rsuv3.constants
 import rsuv3.util
+
+__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
+__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
+__license__ = 'Apache License, Version 2.0'
 
 
 class RSUV3(object):
@@ -44,11 +43,18 @@ class RSUV3(object):
             self.interface.close()
 
     def connect(self, timeout=None):
+        """
+        Initializes serial connection to the RS-UV3.
+
+        :param timeout: Timeout in seconds.
+        :type timeout: int
+        """
         self.interface = serial.Serial(
             self.serial_port, self.baud, rtscts=self.rtscts)
         self.interface.timeout = timeout or rsuv3.constants.SERIAL_TIMEOUT
 
     def _read_result(self):
+        """Reads data from RS-UV3 serial interface."""
         time.sleep(rsuv3.constants.READ_SLEEP)
         read_data = ''
         while 1:

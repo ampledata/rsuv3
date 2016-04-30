@@ -13,9 +13,10 @@ import unittest
 import logging
 import logging.handlers
 
+import dummyserial
+
 from . import constants
 from .context import rsuv3
-from .context import dummy_serial
 
 
 class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
@@ -50,7 +51,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
     def test_get_firmware(self):
         random_firmware = self.random()
         self._logger.debug('random_firmware=%s', random_firmware)
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={'FW\r\n': random_firmware}
         )
@@ -73,7 +74,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         self._logger.debug(
             'random_channel_parameters=%s', random_channel_parameters)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={
                 "CP%s\r\n" % random_channel: random_channel_parameters}
@@ -92,7 +93,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         random_dtmf = self.random(rand_len, dtmf_alpha)
         self._logger.debug('random_dtmf=%s', random_dtmf)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={"DS%s\r\n" % random_dtmf: ''}
         )
@@ -105,7 +106,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         random_squelch_level = self.random(1, constants.NUMBERS)
         self._logger.debug('random_squelch_level=%s', random_squelch_level)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={"SQ%s\r\n" % random_squelch_level: ''}
         )
@@ -118,7 +119,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         random_squelch_level = self.random(1, constants.NUMBERS)
         self._logger.debug('random_squelch_level=%s', random_squelch_level)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={'SQ?\r\n': 'SQ ' + random_squelch_level}
         )

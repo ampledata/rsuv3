@@ -15,11 +15,19 @@ def fix_frequency(frequency):
     return frequency.replace('.', '')
 
 
-def cp_serializer(cp, channel=0):
+def cp_serializer(raw_cp, channel='0'):
+    """
+    Serializses RS-UV3 Channel Parameters into a Dictionary.
+
+    :param channel: Channel Parameters.
+    :type channe: str
+    :returns: Dictionary of Channel Parameters.
+    :rtype: dict
+    """
     params = (
-        'tx_frequency', 'rx_frequency', 'tone_frequency',  'squelch_mode',
+        'tx_frequency', 'rx_frequency', 'tone_frequency', 'squelch_mode',
         'power'
     )
-    channel_params = dict(zip(params, cp.split()))
+    channel_params = dict(zip(params, raw_cp.split()))
     channel_params['channel'] = channel
     return channel_params

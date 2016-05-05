@@ -146,30 +146,17 @@ class RSUV3(object):
         elif '1' in res:
             return {'channel': channel, 'squelch_state': 'open'}
 
-    def get_cw_beacon_timer(self):
-        cmd = ''.join(['BC', '?'])
-        return self._send_command(cmd)
-
-    def set_cw_beacon_timer(self, seconds):
-        cmd = ''.join(['BC', "%03d" % seconds])
-        return self._send_command(cmd)
-
-    def get_beacon_message(self):
-        cmd = ''.join(['BM', '?'])
-        return self._send_command(cmd)
-
-    def set_beacon_message(self, message):
-        cmd = ''.join(['BM', message])
-        return self._send_command(cmd)
-
     def factory_reset(self):
+        """Resets the RS-UV3 to factory settings. Requires a power-cycle."""
         print self._send_command('FD1')
-        return 'Please power-cycle.'
+        return 'Please power-cycle the RS-UV3.'
 
     def set_rx_frequency(self, frequency):
+        """Wrapper for set_frequency that sets only the RX frequency."""
         return self.set_frequency(frequency, 'rx')
 
     def set_tx_frequency(self, frequency):
+        """Wrapper for set_frequency that sets only the TX frequency."""
         return self.set_frequency(frequency, 'tx')
 
     # TODO: Add additional supported params for repeater offsets:
@@ -200,6 +187,7 @@ class RSUV3(object):
         return self._send_command(cmd)
 
     def get_frequency(self):
+        """Gets the current frequency from the RS-UV3."""
         params = ('tx_frequency', 'rx_frequency')
         res = self._send_command('F?')
         res2 = res.split()
@@ -208,13 +196,13 @@ class RSUV3(object):
 
     def get_frequency_measurement(self, frequency):
         """
-        24. FM - Measure the Signal Level on a Specific Frequency
-        Command: FM
+        Measure the Signal Level on a Specific Frequency
+
         Syntax: FMnnnnnn
+
         Description: Tunes the RX to nnnnnn kHz measures and reports the
         signal strength then returns to the original frequency
-        Default State: N/A
-        Notes: all digits required
+
         Response: Reports the signal strength on the given frequency in dBm
         """
         cmd = ''.join(['FM', frequency])
@@ -222,14 +210,9 @@ class RSUV3(object):
 
     def get_squelch_state(self):
         """
-        41. SO - Report the Current State of the Squelch
-        Command: SO
-        Syntax: SO
-        Description: Returns 1 if the squelch is open; 0 if the squelch is
-        closed
-        Default State: N/A
-        Notes: Works with RSSI and CTCSS squelches
-        Response: SO: x
+        Gets the current Squelch State.
+
+        Notes: Works with RSSI and CTCSS squelches.
         """
         res = self._send_command('SO')
         res2 = res.split()
@@ -273,7 +256,6 @@ class RSUV3(object):
 
         Notes: Non DTMF characters generate a pause, 28 characters max,
         automatically keys the TX if needed
-
         """
         cmd = ''.join(['DS', dtmf])
         res = self._send_command(cmd)

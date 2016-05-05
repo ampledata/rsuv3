@@ -44,10 +44,10 @@ pep8:
 	flake8
 
 flake8: install_requirements
-	flake8 --max-complexity 12 --exit-zero rsuv3/*.py *.py
+	flake8 --max-complexity 12 --exit-zero rsuv3/*.py tests/*.py *.py
 
 lint: install_requirements
 	pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
-	-r n rsuv3/*.py *.py || exit 0
+	-r n rsuv3/*.py tests/*.py *.py || exit 0
 
 test: lint flake8 nosetests

@@ -3,11 +3,6 @@
 
 """Tests for RS-UV3 Classes."""
 
-__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
-
-
 import random
 import unittest
 import logging
@@ -17,6 +12,10 @@ import dummyserial
 
 from . import constants
 from .context import rsuv3
+
+__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
 
 
 class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
@@ -128,3 +127,21 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         squelch_level = self.rsuv3.get_squelch_level()
         self.assertEqual(
             {'squelch_level': random_squelch_level}, squelch_level)
+
+    def test_get_squelch_state(self):
+        random_squelch_state = self.random(1, '01')
+        self._logger.debug('random_squelch_state=%s', random_squelch_state)
+
+        self.rsuv3.interface = dummyserial.Serial(
+            port=self.random_serial_port,
+            ds_responses={'SO\r\n': 'SO: ' + random_squelch_state}
+        )
+        self._logger.info('rsuv3 interface=%s', self.rsuv3.interface)
+        if random_squelch_state == '0':
+            rss = 'closed'
+        elif random_squelch_state == '1':
+            rss = 'open'
+
+        squelch_state = self.rsuv3.get_squelch_state()
+        self.assertEqual(
+            {'squelch_state': rss}, squelch_state)

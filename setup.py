@@ -13,7 +13,7 @@ import sys
 import setuptools
 
 __title__ = 'rsuv3'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
 __copyright__ = 'Copyright 2016 Orion Labs, Inc.'
 __license__ = 'Apache License, Version 2.0'
@@ -42,4 +42,10 @@ setuptools.setup(
     package_dir={'rsuv3': 'rsuv3'},
     url='https://github.com/ampledata/rsuv3',
     long_description=open('README.rst').read(),
+    setup_requires=[
+      'coverage >= 3.7.1',
+      'nose >= 1.3.7',
+      'dummyserial'
+    ],
+
 )

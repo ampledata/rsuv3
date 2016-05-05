@@ -7,17 +7,16 @@ Setup for the RSUV3 Python Library.
 Source:: https://github.com/ampledata/rsuv3
 """
 
+import os
+import sys
+
+import setuptools
+
 __title__ = 'rsuv3'
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 __author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
 __copyright__ = 'Copyright 2016 Orion Labs, Inc.'
 __license__ = 'Apache License, Version 2.0'
-
-
-
-import os
-import setuptools
-import sys
 
 
 def publish():

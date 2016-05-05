@@ -3,19 +3,19 @@
 
 """Tests for RS-UV3 Classes."""
 
-__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
-
-
 import random
 import unittest
 import logging
 import logging.handlers
 
+import dummyserial
+
 from . import constants
 from .context import rsuv3
-from .context import dummy_serial
+
+__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
 
 
 class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
@@ -50,7 +50,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
     def test_get_firmware(self):
         random_firmware = self.random()
         self._logger.debug('random_firmware=%s', random_firmware)
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={'FW\r\n': random_firmware}
         )
@@ -73,7 +73,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         self._logger.debug(
             'random_channel_parameters=%s', random_channel_parameters)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={
                 "CP%s\r\n" % random_channel: random_channel_parameters}
@@ -92,7 +92,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         random_dtmf = self.random(rand_len, dtmf_alpha)
         self._logger.debug('random_dtmf=%s', random_dtmf)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={"DS%s\r\n" % random_dtmf: ''}
         )
@@ -105,7 +105,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         random_squelch_level = self.random(1, constants.NUMBERS)
         self._logger.debug('random_squelch_level=%s', random_squelch_level)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={"SQ%s\r\n" % random_squelch_level: ''}
         )
@@ -118,7 +118,7 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         random_squelch_level = self.random(1, constants.NUMBERS)
         self._logger.debug('random_squelch_level=%s', random_squelch_level)
 
-        self.rsuv3.interface = dummy_serial.Serial(
+        self.rsuv3.interface = dummyserial.Serial(
             port=self.random_serial_port,
             ds_responses={'SQ?\r\n': 'SQ ' + random_squelch_level}
         )
@@ -127,3 +127,21 @@ class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
         squelch_level = self.rsuv3.get_squelch_level()
         self.assertEqual(
             {'squelch_level': random_squelch_level}, squelch_level)
+
+    def test_get_squelch_state(self):
+        random_squelch_state = self.random(1, '01')
+        self._logger.debug('random_squelch_state=%s', random_squelch_state)
+
+        self.rsuv3.interface = dummyserial.Serial(
+            port=self.random_serial_port,
+            ds_responses={'SO\r\n': 'SO: ' + random_squelch_state}
+        )
+        self._logger.info('rsuv3 interface=%s', self.rsuv3.interface)
+        if random_squelch_state == '0':
+            rss = 'closed'
+        elif random_squelch_state == '1':
+            rss = 'open'
+
+        squelch_state = self.rsuv3.get_squelch_state()
+        self.assertEqual(
+            {'squelch_state': rss}, squelch_state)

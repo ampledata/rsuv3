@@ -9,4 +9,3 @@
 
 flake8
 pylint
-dummyserial

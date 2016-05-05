@@ -42,4 +42,10 @@ setuptools.setup(
     package_dir={'rsuv3': 'rsuv3'},
     url='https://github.com/ampledata/rsuv3',
     long_description=open('README.rst').read(),
+    setup_requires=[
+      'coverage >= 3.7.1',
+      'nose >= 1.3.7',
+      'dummyserial'
+    ],
+
 )

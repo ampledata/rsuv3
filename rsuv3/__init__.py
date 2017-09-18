@@ -7,15 +7,19 @@
 RSUV3 Python Library.
 ~~~~
 
-:author: Greg Albrecht W2GMD <gba@orionlabs.io>
-:copyright: Copyright 2016 Orion Labs, Inc.
+:author: Greg Albrecht W2GMD <oss@undef.net>
+:copyright: Copyright 2017 Greg Albrecht
 :license: Apache License, Version 2.0
 :source: <https://github.com/ampledata/rsuv3>
 """
 
-from rsuv3.classes import RSUV3  # NOQA
-from rsuv3.util import fix_frequency  # NOQA
+from .constants import (LOG_LEVEL, LOG_FORMAT, SERIAL_TIMEOUT, RTSCTS  # NOQA
+                        SERIAL_TIMEOUT, READ_BYTES, READ_SLEEP)
 
-__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
-__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
+from .util import fix_frequency  # NOQA
+
+from .classes import RSUV3  # NOQA
+
+__author__ = 'Greg Albrecht W2GMD <oss@undef.net>'
+__copyright__ = 'Copyright 2017 Greg Albrecht'
 __license__ = 'Apache License, Version 2.0'

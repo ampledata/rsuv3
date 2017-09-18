@@ -1,8 +1,8 @@
 # Makefile for RSUV3.
 #
 # Source:: https://github.com/ampledata/rsuv3
-# Author:: Greg Albrecht W2GMD <gba@orionlabs.io>
-# Copyright:: Copyright 2016 Orion Labs, Inc.
+# Author:: Greg Albrecht W2GMD <oss@undef.net>
+# Copyright:: Copyright 2017 Greg Albrecht
 # License:: Apache License, Version 2.0
 #
 
@@ -10,44 +10,54 @@
 .DEFAULT_GOAL := all
 
 
-all: install_requirements develop
+all: develop
 
-develop:
+develop: remember
 	python setup.py develop
 
-install:
+install: remember
 	python setup.py install
 
 install_requirements:
-	pip install --upgrade -r requirements.txt
+	pip install -r requirements.txt
 
 uninstall:
 	pip uninstall -y rsuv3
 
 reinstall: uninstall install
 
+remember:
+	@echo
+	@echo "Hello from the Makefile..."
+	@echo "Don't forget to run: 'make install_requirements'"
+	@echo
+
 clean:
-	rm -rf *.egg* build dist *.py[oc] */*.py[co] cover doctest_pypi.cfg \
-		nosetests.xml pylint.log *.egg output.xml flake8.log tests.log \
-		test-result.xml htmlcov fab.log *.deb *.eggs
+	@rm -rf *.egg* build dist *.py[oc] */*.py[co] cover doctest_pypi.cfg \
+		nosetests.xml pylint.log output.xml flake8.log tests.log \
+		test-result.xml htmlcov fab.log .coverage
 
-clonedigger:
-	clonedigger --cpd-output .
-
-publish:
+publish: remember
 	python setup.py register sdist upload
 
-nosetests:
+nosetests: remember
 	python setup.py nosetests
 
-pep8:
-	flake8
-
-flake8: install_requirements
+pep8: remember
 	flake8 --max-complexity 12 --exit-zero rsuv3/*.py tests/*.py *.py
 
-lint: install_requirements
-	pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
-	-r n rsuv3/*.py tests/*.py *.py || exit 0
+flake8: pep8
 
-test: lint flake8 nosetests
+lint: remember
+	pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
+	-r n *.py  --ignore-imports=y rsuv3/*.py tests/*.py || exit 0
+
+pylint: lint
+
+clonedigger: remember
+	clonedigger --cpd-output .
+
+coverage:
+	coverage report -m
+
+test: lint flake8 nosetests coverage

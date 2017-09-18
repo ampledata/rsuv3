@@ -3,8 +3,8 @@
 
 """RS-UV3 Utils."""
 
-__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
-__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
+__author__ = 'Greg Albrecht W2GMD <oss@undef.net>'
+__copyright__ = 'Copyright 2017 Greg Albrecht'
 __license__ = 'Apache License, Version 2.0'
 
 

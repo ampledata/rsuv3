@@ -3,17 +3,17 @@
 
 """RS-UV3 Classes."""
 
+from __future__ import print_function
+
 import logging
-import logging.handlers
 import time
 
 import serial
 
-import rsuv3.constants
-import rsuv3.util
+import rsuv3
 
-__author__ = 'Greg Albrecht W2GMD <gba@orionlabs.io>'
-__copyright__ = 'Copyright 2016 Orion Labs, Inc.'
+__author__ = 'Greg Albrecht W2GMD <oss@undef.net>'
+__copyright__ = 'Copyright 2017 Greg Albrecht'
 __license__ = 'Apache License, Version 2.0'
 
 
@@ -21,16 +21,16 @@ class RSUV3(object):
 
     _logger = logging.getLogger(__name__)
     if not _logger.handlers:
-        _logger.setLevel(rsuv3.constants.LOG_LEVEL)
+        _logger.setLevel(rsuv3.LOG_LEVEL)
         _console_handler = logging.StreamHandler()
-        _console_handler.setLevel(rsuv3.constants.LOG_LEVEL)
-        _console_handler.setFormatter(rsuv3.constants.LOG_FORMAT)
+        _console_handler.setLevel(rsuv3.LOG_LEVEL)
+        _console_handler.setFormatter(rsuv3.LOG_FORMAT)
         _logger.addHandler(_console_handler)
         _logger.propagate = False
 
     def __init__(self, serial_port, baud=None, rtscts=None):
-        self.baud = baud or rsuv3.constants.SERIAL_BAUD
-        self.rtscts = rtscts or rsuv3.constants.RTSCTS
+        self.baud = baud or rsuv3.SERIAL_BAUD
+        self.rtscts = rtscts or rsuv3.RTSCTS
         self.serial_port = serial_port
         self.interface = None
 
@@ -51,15 +51,15 @@ class RSUV3(object):
         """
         self.interface = serial.Serial(
             self.serial_port, self.baud, rtscts=self.rtscts)
-        self.interface.timeout = timeout or rsuv3.constants.SERIAL_TIMEOUT
+        self.interface.timeout = timeout or rsuv3.SERIAL_TIMEOUT
 
     def _read_result(self):
         """Reads data from RS-UV3 serial interface."""
-        time.sleep(rsuv3.constants.READ_SLEEP)
+        time.sleep(rsuv3.READ_SLEEP)
         read_data = ''
         while 1:
             read_data = ''.join([
-                read_data, self.interface.read(rsuv3.constants.READ_BYTES)])
+                read_data, self.interface.read(rsuv3.READ_BYTES)])
             waiting_data = self.interface.outWaiting()
             if not waiting_data:
                 return read_data.replace('\r', '\n').rstrip().lstrip()
@@ -148,7 +148,7 @@ class RSUV3(object):
 
     def factory_reset(self):
         """Resets the RS-UV3 to factory settings. Requires a power-cycle."""
-        print self._send_command('FD1')
+        print(self._send_command('FD1'))
         return 'Please power-cycle the RS-UV3.'
 
     def set_rx_frequency(self, frequency):

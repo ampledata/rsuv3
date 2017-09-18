@@ -13,8 +13,8 @@ RSUV3 Python Library.
 :source: <https://github.com/ampledata/rsuv3>
 """
 
-from .constants import (LOG_LEVEL, LOG_FORMAT, SERIAL_TIMEOUT, RTSCTS  # NOQA
-                        SERIAL_TIMEOUT, READ_BYTES, READ_SLEEP)
+from .constants import (LOG_FORMAT, LOG_LEVEL, SERIAL_TIMEOUT, RTSCTS,  # NOQA
+                        SERIAL_BAUD, READ_BYTES, READ_SLEEP)
 
 from .util import fix_frequency  # NOQA
 

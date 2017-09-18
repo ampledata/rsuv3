@@ -3,6 +3,7 @@
 
 """RS-UV3 Constants."""
 
+import os
 import logging
 
 __author__ = 'Greg Albrecht W2GMD <oss@undef.net>'

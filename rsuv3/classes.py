@@ -178,12 +178,15 @@ class RSUV3(object):
         :param frequency: Frequency to set.
         :param op_arg: TX Frequency, RX Frequency or Both Frequencies.
         """
+        freq = '{:0<6}'.format(rsuv3.fix_frequency(frequency))
+
         if op_arg == 'both':
-            cmd = ''.join(['FS', frequency])
+            cmd = ''.join(['FS', freq])
         elif op_arg == 'rx':
-            cmd = ''.join(['FR', frequency])
+            cmd = ''.join(['FR', freq])
         elif op_arg == 'tx':
-            cmd = ''.join(['FT', frequency])
+            cmd = ''.join(['FT', freq])
+
         return self._send_command(cmd)
 
     def get_frequency(self):
@@ -258,5 +261,77 @@ class RSUV3(object):
         automatically keys the TX if needed
         """
         cmd = ''.join(['DS', dtmf])
+        res = self._send_command(cmd)
+        return res
+
+    def set_tone_frequency(self, tone_frequency):
+        """
+        Sets CTCSS tone frequency.
+        """
+        cmd = ''.join(
+            ['TF', '{:0<5}'.format(rsuv3.fix_frequency(tone_frequency))])
+        res = self._send_command(cmd)
+        return res
+
+    def get_tone_frequency(self):
+        """
+        Gets & Returns the current CTCSS tone frequency as a dictionary:
+
+            {
+                'tone_frequency': n
+            }
+
+        :returns: Tone Frequency as a dictionary.
+        :rtype: dict
+        """
+        res = self._send_command('TF?')
+        res2 = res.split()
+        return {'tone_frequency': res2[1]}
+
+    def set_volume_level(self, level):
+        """
+        Sets volume level from 0 to 39 in 1 dB steps.
+
+        Note: DTMF decode works best with vloume 10
+
+        :param level: Volume level.
+        :type level: int
+        """
+        cmd = ''.join(['VU', '{:0>2}'.format(level)])
+        res = self._send_command(cmd)
+        return res
+
+    def get_volume_level(self):
+        """
+        Gets & Returns the current volume level as a dictionary:
+
+            {
+                'volume_level': n
+            }
+
+        :returns: Volume Level as a dictionary.
+        :rtype: dict
+        """
+        res = self._send_command('VU?')
+        res2 = res.split()
+        return {'volume_level': res2[1]}
+
+    def start_transmitter(self, duration=1):
+        """
+        Turns the transmitter ON for duration.
+
+        Note:
+         - duration of 0 turns OFF the transmitter.
+         - duration of n turns ON the transmitter with a duration of n-minutes.
+        """
+        cmd = ''.join(['TX', duration])
+        res = self._send_command(cmd)
+        return res
+
+    def stop_transmitter(self):
+        """
+        Turns the transmitter OFF.
+        """
+        cmd = ''.join(['TX', 0])
         res = self._send_command(cmd)
         return res

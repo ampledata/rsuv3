@@ -12,7 +12,7 @@ def fix_frequency(frequency):
     """
     Fixes the frequency format for RS-UV3.
     """
-    return frequency.replace('.', '')
+    return str(frequency).replace('.', '')
 
 
 def cp_serializer(raw_cp, channel='0'):

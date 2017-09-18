@@ -6,7 +6,6 @@
 import random
 import unittest
 import logging
-import logging.handlers
 
 import dummyserial
 
@@ -19,14 +18,15 @@ __copyright__ = 'Copyright 2017 Greg Albrecht'
 
 
 class RSUV3Test(unittest.TestCase):  # pylint: disable=R0904
+
     """Tests for RS-UV3 Class RSUV3."""
 
     _logger = logging.getLogger(__name__)
     if not _logger.handlers:
-        _logger.setLevel(rsuv3.constants.LOG_LEVEL)
+        _logger.setLevel(rsuv3.LOG_LEVEL)
         _console_handler = logging.StreamHandler()
-        _console_handler.setLevel(rsuv3.constants.LOG_LEVEL)
-        _console_handler.setFormatter(rsuv3.constants.LOG_FORMAT)
+        _console_handler.setLevel(rsuv3.LOG_LEVEL)
+        _console_handler.setFormatter(rsuv3.LOG_FORMAT)
         _logger.addHandler(_console_handler)
         _logger.propagate = False
 

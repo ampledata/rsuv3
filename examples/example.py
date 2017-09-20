@@ -34,3 +34,23 @@ if __name__ == '__main__':
     #print conn.set_squelch_level(5)
     #print c.send_dtmf('ABC')
     #print c.factory_reset()
+
+radio = rsuv3.RSUV3('/dev/ttyAMA0')
+radio.connect()
+
+frequency = rsuv3.util.fix_frequency(FREQ)
+
+radio.set_frequency(frequency)
+radio.set_squelch_level(8)
+radio._send_command('TM2')
+radio._send_command('TF21810')
+radio._send_command('CLW2GMD')  # Set Callsign
+radio._send_command('BMW2GMD')  # Set Beacon Message
+radio._send_command('BT600')  # Set Beacon Interval
+
+print radio.get_frequency()
+print radio._send_command('BM?')  # Report current beacon message
+print radio._send_command('BT?')  # Report current beacon time
+print radio.get_squelch_level()
+print radio.get_squelch_state()
+print radio._send_command('ID')  # Send ID

@@ -81,19 +81,37 @@ class RSUV3(object):
         self._logger.debug('result="%s"', ' '.join(res.split('\n')))
         return res
 
-    def get_firmware(self):
-        """
-        Gets & Returns the current firmware version as a dictionary:
+    def get_status(self):
+        """Gets the current status of the RS-UV3."""
+        self.get_firmware_version()
+        self.get_squelch_level()
+        self.get_frequency()
+        self.get_tone_frequency()
+        self.get_voltage()
+        self.get_volume_level()
+        self.get_ctcss_mode()
+        self.get_squelch_state()
+        self.get_noise_level()
+        self.get_callsign()
+        return {
+            'firmware_version': self.firmware_version,
+            'squelch_level': self.squelch_level,
+            'rx_frequency': self.rx_frequency,
+            'tx_frequency': self.tx_frequency,
+            'tone_frequency': self.tone_frequency,
+            'voltage': self.voltage,
+            'volume_level': self.volume_level,
+            'ctcss_mode': self.ctcss_mode,
+            'squelch_state': self.squelch_state,
+            'noise_level': self.noise_level,
+            'callsign': self.callsign
+        }
 
-            {
-                'firmware_version': 'xxx'
-            }
-
-        :returns: Firmware Version as a dictionary.
-        :rtype: dict
-        """
+    def get_firmware_version(self):
+        """Gets Firmware Version."""
         res = self._send_command('FW')
-        return {'firmware_version': res}
+        self.firmware_version = res.split()[-1]
+        return self.firmware_version
 
     def get_channel_parameters(self, channel=0):
         """
@@ -195,6 +213,10 @@ class RSUV3(object):
         res = self._send_command('F?')
         res2 = res.split()
         res3 = dict(zip(params, [res2[1], res2[3]]))
+        self.rx_frequency = float(
+            '{:3.4f}'.format(float(res3['rx_frequency']) / 1000))
+        self.tx_frequency = float(
+            '{:3.4f}'.format(float(res3['tx_frequency']) / 1000))
         return res3
 
     def get_frequency_measurement(self, frequency):
@@ -208,7 +230,8 @@ class RSUV3(object):
 
         Response: Reports the signal strength on the given frequency in dBm
         """
-        cmd = ''.join(['FM', frequency])
+        freq = '{:0<6}'.format(rsuv3.fix_frequency(frequency))
+        cmd = ''.join(['FM', freq])
         return self._send_command(cmd)
 
     def get_squelch_state(self):
@@ -220,25 +243,16 @@ class RSUV3(object):
         res = self._send_command('SO')
         res2 = res.split()
         if '0' in res2:
-            return {'squelch_state': 'closed'}
+            self.squelch_state = 'closed'
         elif '1' in res2:
-            return {'squelch_state': 'open'}
+            self.squelch_state = 'open'
+        return self.squelch_state
 
     def get_squelch_level(self):
-        """
-        Gets & Returns the current RSSI Squelch Level as a dictionary:
-
-            {
-                'squelch_level': n
-            }
-
-        :returns: Squelch Level as a dictionary.
-        :rtype: dcit
-        """
+        """Gets RSSI Squelch Level."""
         res = self._send_command('SQ?')
-        # FIXME: Why did I put a split() call here?
-        res2 = res.split()
-        return {'squelch_level': res2[1]}
+        self.squelch_level = int(res.split()[-1])
+        return self.squelch_level
 
     def set_squelch_level(self, level):
         """
@@ -254,41 +268,33 @@ class RSUV3(object):
         """
         Immediately transmits a string of DTMF Characters.
 
-        DTMF characters are in the set of:
-            [0-9,A-D,*,#]
+        DTMF characters are in the set of: [0-9, A-D, *, #]
 
-        Notes: Non DTMF characters generate a pause, 28 characters max,
-        automatically keys the TX if needed
+        Notes:
+            * Non-DTMF characters generate a pause
+            * 28 characters MAX
+            * Will automatically key the TX if needed
         """
         cmd = ''.join(['DS', dtmf])
         res = self._send_command(cmd)
         return res
 
-    def set_tone_frequency(self, tone_frequency):
-        """
-        Sets CTCSS tone frequency.
-        """
+    def set_tone_frequency(self, tone_frequency=None):
+        """Sets CTCSS tone frequency."""
+        tone_frequency = tone_frequency or rsuv3.DEFAULT_TONE_FREQUENCY
         cmd = ''.join(
             ['TF', '{:0<5}'.format(rsuv3.fix_frequency(tone_frequency))])
         res = self._send_command(cmd)
         return res
 
     def get_tone_frequency(self):
-        """
-        Gets & Returns the current CTCSS tone frequency as a dictionary:
-
-            {
-                'tone_frequency': n
-            }
-
-        :returns: Tone Frequency as a dictionary.
-        :rtype: dict
-        """
+        """Gets CTCSS tone frequency."""
         res = self._send_command('TF?')
-        res2 = res.split()
-        return {'tone_frequency': res2[1]}
+        res2 = res.split()[-1]
+        self.tone_frequency = float('{:3.2f}'.format(float(res2) / 100))
+        return self.tone_frequency
 
-    def set_volume_level(self, level):
+    def set_volume_level(self, level=None):
         """
         Sets volume level from 0 to 39 in 1 dB steps.
 
@@ -297,41 +303,84 @@ class RSUV3(object):
         :param level: Volume level.
         :type level: int
         """
+        level = level or rsuv3.DEFAULT_VOLUME
         cmd = ''.join(['VU', '{:0>2}'.format(level)])
         res = self._send_command(cmd)
         return res
 
     def get_volume_level(self):
-        """
-        Gets & Returns the current volume level as a dictionary:
-
-            {
-                'volume_level': n
-            }
-
-        :returns: Volume Level as a dictionary.
-        :rtype: dict
-        """
-        res = self._send_command('VU?')
-        res2 = res.split()
-        return {'volume_level': res2[1]}
+        """Gets Volume Level."""
+        self.volume_level = int(self._send_command('VU?').split()[-1])
+        return self.volume_level
 
     def start_transmitter(self, duration=1):
         """
         Turns the transmitter ON for duration.
 
         Note:
-         - duration of 0 turns OFF the transmitter.
-         - duration of n turns ON the transmitter with a duration of n-minutes.
+            * Duration of 0 turns OFF the transmitter.
+            * Duration of n turns ON the transmitter for n-Minutes.
         """
         cmd = ''.join(['TX', duration])
         res = self._send_command(cmd)
         return res
 
     def stop_transmitter(self):
-        """
-        Turns the transmitter OFF.
-        """
+        """Turns the transmitter OFF."""
         cmd = ''.join(['TX', 0])
         res = self._send_command(cmd)
+        return res
+
+    def get_voltage(self):
+        """
+        Returns operating/battery voltage.
+
+        Ranges from 8.5 V with external power, 6.5 V to 8.5 V on battery.
+        """
+        res = self._send_command('VT')
+        res2 = res.split('VT:')[-1].lstrip().replace('V', '')
+        self.voltage = float(res2)
+        return self.voltage
+
+    def set_ctcss_mode(self, mode=None):
+        """
+        Sets CTCSS Mode.
+
+        Where 'mode' is one of:
+            * 0 = CTCSS Tone Off
+            * 1 = TX CTCSS Tone
+            * 2 = TX & RX CTCSS Tone (a.k.a Tone Squelch)
+        """
+        cmd = ''.join(['TM', mode])
+        res = self._send_command(cmd)
+        return res
+
+    def get_ctcss_mode(self):
+        """Gets CTCSS Mode."""
+        self.ctcss_mode = int(self._send_command('TM?').split()[-1])
+        return self.ctcss_mode
+
+    def get_noise_level(self):
+        """Gets RX Noise Level."""
+        res = self._send_command('SN')
+        self.noise_level = int(res.split()[-1].lstrip())
+        return self.noise_level
+
+    def set_callsign(self, callsign):
+        """Sets Callsign."""
+        cmd = ''.join(['CL', callsign])
+        res = self._send_command(cmd)
+        return res
+
+    def get_callsign(self):
+        """Gets Callsign."""
+        res = self._send_command('CL?')
+        self.callsign = res.split('CL:')[-1].lstrip()
+        return self.callsign
+
+    def identify(self):
+        """
+        Sends the Callsign in Audio CW, automatically keys the TX if needed.
+        """
+        res = self._send_command('ID')
         return res

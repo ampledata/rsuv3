@@ -14,7 +14,8 @@ RSUV3 Python Library.
 """
 
 from .constants import (LOG_FORMAT, LOG_LEVEL, SERIAL_TIMEOUT, RTSCTS,  # NOQA
-                        SERIAL_BAUD, READ_BYTES, READ_SLEEP)
+                        SERIAL_BAUD, READ_BYTES, READ_SLEEP, DEFAULT_VOLUME,
+                        DEFAULT_TONE_FREQUENCY)
 
 from .util import fix_frequency  # NOQA
 
